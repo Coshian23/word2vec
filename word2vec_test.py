@@ -43,13 +43,14 @@ text = re.sub('\r', '', text)
 
 #形態素解析
 import MeCab
+import logging
 
 mecab = MeCab.Tagger("-Ochasen")
-words = []
 
 # テキストを引数として、形態素解析の結果、名詞・動詞・形容詞(原形)のみを配列で抽出する関数を定義
 def extract_words(text):
     node = mecab.parseToNode(text)
+    words = []
     while node:
         word = node.feature.split(",")[6] #原形
         word_type = node.feature.split(",")[0] #品詞
@@ -77,11 +78,13 @@ from gensim.models import word2vec
 # ときは、学習回数が少ないと考えられます。
 # その場合、iterの値を大きくして、再度学習を行います。
 
+# 進捗監視用ログ
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 # 事前準備したword_listを使ってWord2Vecの学習実施
-model = word2vec.Word2Vec(word_list, size=100,min_count=5,window=5,iter=100)
+model = word2vec.Word2Vec(word_list, size=100,min_count=5,window=5,iter=500)
 
 # モデルの保存
-model.save("./sangetsuki.model")
+model.save("./sangetsuki_correct500.model")
 
 # 結果の確認1
 # 一つ一つの単語は100次元のベクトルになっています。
